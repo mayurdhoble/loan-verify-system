@@ -1,0 +1,400 @@
+{% extends "base.html" %}
+{% block title %}Upload Documents - LoanVerify Pro{% endblock %}
+
+{% block extra_css %}
+<style>
+    .upload-container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(15, 23, 42, 0.1);
+        animation: fadeInUp 0.6s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding-bottom: 25px;
+        border-bottom: 3px solid #f1f5f9;
+        position: relative;
+    }
+    
+    .page-header::after {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120px;
+        height: 3px;
+        background: linear-gradient(90deg, #0f172a, #3b82f6, #0f172a);
+        animation: glow 2s ease-in-out infinite;
+    }
+    
+    @keyframes glow {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+    
+    .page-title {
+        font-size: 2.5em;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 10px;
+        background: linear-gradient(135deg, #0f172a, #3b82f6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .page-subtitle {
+        color: var(--gray);
+        font-size: 1.1em;
+    }
+    
+    .form-group {
+        margin-bottom: 30px;
+        animation: slideIn 0.5s ease-out both;
+    }
+    
+    .form-group:nth-child(1) { animation-delay: 0.1s; }
+    .form-group:nth-child(2) { animation-delay: 0.2s; }
+    .form-group:nth-child(3) { animation-delay: 0.3s; }
+    .form-group:nth-child(4) { animation-delay: 0.4s; }
+    
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .form-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 12px;
+        font-size: 1.05em;
+    }
+    
+    .label-icon {
+        font-size: 1.3em;
+    }
+    
+    .file-input-wrapper {
+        position: relative;
+        overflow: hidden;
+        border: 2px dashed #cbd5e1;
+        border-radius: 12px;
+        padding: 30px;
+        text-align: center;
+        transition: all 0.3s ease;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        cursor: pointer;
+    }
+    
+    .file-input-wrapper:hover {
+        border-color: #3b82f6;
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+    }
+    
+    .file-input-wrapper.has-file {
+        border-color: #10b981;
+        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    }
+    
+    .file-input-wrapper input[type="file"] {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+    
+    .file-input-content {
+        pointer-events: none;
+    }
+    
+    .file-icon {
+        font-size: 3em;
+        margin-bottom: 10px;
+        display: block;
+    }
+    
+    .file-text {
+        color: var(--gray);
+        font-size: 0.95em;
+    }
+    
+    .file-text strong {
+        color: var(--accent);
+    }
+    
+    .file-name {
+        margin-top: 10px;
+        color: var(--success);
+        font-weight: 600;
+        font-size: 0.9em;
+        display: none;
+    }
+    
+    .has-file .file-name {
+        display: block;
+    }
+    
+    .url-input {
+        width: 100%;
+        padding: 16px 20px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1em;
+        transition: all 0.3s ease;
+        background: #f8fafc;
+    }
+    
+    .url-input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+    
+    .submit-btn {
+        width: 100%;
+        padding: 18px;
+        font-size: 1.1em;
+        font-weight: 600;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #0f172a 0%, #3b82f6 100%);
+        color: white;
+        cursor: pointer;
+        transition: all 0.4s ease;
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        position: relative;
+        overflow: hidden;
+        animation: slideIn 0.5s ease-out 0.5s both;
+    }
+    
+    .submit-btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .submit-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
+    }
+    
+    .submit-btn:hover::before {
+        width: 500px;
+        height: 500px;
+    }
+    
+    .submit-btn:disabled {
+        background: linear-gradient(135deg, #94a3b8, #cbd5e1);
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .info-box {
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        border-left: 4px solid #3b82f6;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        animation: slideIn 0.5s ease-out both;
+    }
+    
+    .info-box h4 {
+        color: var(--dark);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .info-box ul {
+        margin: 10px 0 0 0;
+        padding-left: 20px;
+        color: var(--gray);
+    }
+    
+    .info-box li {
+        margin: 8px 0;
+    }
+    
+    @media (max-width: 768px) {
+        .upload-container {
+            padding: 25px;
+        }
+        
+        .page-title {
+            font-size: 2em;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="upload-container">
+    <div class="page-header">
+        <h1 class="page-title">📤 Upload Documents</h1>
+        <p class="page-subtitle">Add new member profile with supporting documents</p>
+    </div>
+    
+    <div class="info-box">
+        <h4>📋 Required Documents</h4>
+        <ul>
+            <li><strong>DFR (Dealer Financing Request)</strong> - Primary loan application form</li>
+            <li><strong>Purchase Agreement</strong> - Vehicle purchase contract</li>
+            <li><strong>Title Document</strong> - Vehicle ownership certificate</li>
+            <li><strong>Profile URL</strong> - Web profile for verification</li>
+        </ul>
+    </div>
+    
+    <form method="POST" enctype="multipart/form-data" id="uploadForm">
+        <div class="form-group">
+            <label class="form-label">
+                <span class="label-icon">📄</span>
+                <span>DFR Document (PDF)</span>
+            </label>
+            <div class="file-input-wrapper" id="dfr-wrapper">
+                <input type="file" name="doc_dfr" accept=".pdf" required onchange="handleFileSelect(this, 'dfr-wrapper')">
+                <div class="file-input-content">
+                    <span class="file-icon">📄</span>
+                    <p class="file-text"><strong>Click to upload</strong> or drag and drop<br>PDF file only</p>
+                    <p class="file-name" id="dfr-name"></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">
+                <span class="label-icon">📋</span>
+                <span>Purchase Agreement (PDF)</span>
+            </label>
+            <div class="file-input-wrapper" id="pa-wrapper">
+                <input type="file" name="doc_pa" accept=".pdf" required onchange="handleFileSelect(this, 'pa-wrapper')">
+                <div class="file-input-content">
+                    <span class="file-icon">📋</span>
+                    <p class="file-text"><strong>Click to upload</strong> or drag and drop<br>PDF file only</p>
+                    <p class="file-name" id="pa-name"></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">
+                <span class="label-icon">🏷️</span>
+                <span>Title Document (PDF)</span>
+            </label>
+            <div class="file-input-wrapper" id="title-wrapper">
+                <input type="file" name="doc_title" accept=".pdf" required onchange="handleFileSelect(this, 'title-wrapper')">
+                <div class="file-input-content">
+                    <span class="file-icon">🏷️</span>
+                    <p class="file-text"><strong>Click to upload</strong> or drag and drop<br>PDF file only</p>
+                    <p class="file-name" id="title-name"></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">
+                <span class="label-icon">🌐</span>
+                <span>Profile URL</span>
+            </label>
+            <input type="url" name="profile_url" class="url-input" placeholder="https://example.com/profile" required>
+        </div>
+        
+        <button type="submit" class="submit-btn">
+            <span>📤 Upload & Create Member Profile</span>
+        </button>
+    </form>
+</div>
+
+<script>
+    function handleFileSelect(input, wrapperId) {
+        const wrapper = document.getElementById(wrapperId);
+        const nameElement = wrapper.querySelector('.file-name');
+        
+        if (input.files && input.files[0]) {
+            const fileName = input.files[0].name;
+            nameElement.textContent = '✅ ' + fileName;
+            wrapper.classList.add('has-file');
+        } else {
+            nameElement.textContent = '';
+            wrapper.classList.remove('has-file');
+        }
+    }
+    
+    // Prevent default drag behaviors
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        document.body.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    // Highlight drop area when item is dragged over it
+    const dropAreas = document.querySelectorAll('.file-input-wrapper');
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropAreas.forEach(dropArea => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropAreas.forEach(dropArea => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+    });
+    
+    function highlight(e) {
+        this.style.borderColor = '#3b82f6';
+        this.style.background = 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)';
+    }
+    
+    function unhighlight(e) {
+        if (!this.classList.contains('has-file')) {
+            this.style.borderColor = '#cbd5e1';
+            this.style.background = 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)';
+        }
+    }
+</script>
+{% endblock %}

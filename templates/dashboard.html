@@ -1,0 +1,830 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - LoanVerify Pro{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0c4a6e 100%);
+        color: white;
+        border-radius: 20px;
+        padding: 60px 40px;
+        text-align: center;
+        margin-bottom: 40px;
+        box-shadow: 0 20px 60px rgba(15, 23, 42, 0.4);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+        animation: heroFloat 20s infinite ease-in-out;
+    }
+    
+    .hero-section::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+        animation: shimmer 3s infinite;
+    }
+    
+    @keyframes heroFloat {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(30px, -30px) scale(1.1); }
+        66% { transform: translate(-20px, 20px) scale(0.95); }
+    }
+    
+    @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        animation: fadeInUp 0.8s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .hero-title {
+        font-size: 3em;
+        font-weight: 700;
+        margin-bottom: 15px;
+        text-shadow: 0 2px 20px rgba(59, 130, 246, 0.5);
+        animation: glow 2s ease-in-out infinite alternate;
+    }
+    
+    @keyframes glow {
+        from { text-shadow: 0 2px 20px rgba(59, 130, 246, 0.5); }
+        to { text-shadow: 0 4px 30px rgba(59, 130, 246, 0.8), 0 0 10px rgba(96, 165, 250, 0.6); }
+    }
+    
+    .hero-subtitle {
+        font-size: 1.3em;
+        opacity: 0.95;
+        font-weight: 300;
+        animation: fadeInUp 0.8s ease-out 0.3s both;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+    }
+    
+    .stat-card {
+        background: white;
+        padding: 30px 25px;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(15, 23, 42, 0.1);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        animation: slideInUp 0.6s ease-out both;
+    }
+    
+    .stat-card:nth-child(1) { animation-delay: 0.1s; }
+    .stat-card:nth-child(2) { animation-delay: 0.2s; }
+    .stat-card:nth-child(3) { animation-delay: 0.3s; }
+    .stat-card:nth-child(4) { animation-delay: 0.4s; }
+    
+    @keyframes slideInUp {
+        from { opacity: 0; transform: translateY(50px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(180deg, #0f172a, #3b82f6);
+        transition: width 0.4s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-12px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);
+    }
+    
+    .stat-card:hover::before {
+        width: 100%;
+        opacity: 0.05;
+    }
+    
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2em;
+        margin-bottom: 15px;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #3b82f6 100%);
+        color: white;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.3);
+        animation: iconBounce 2s ease-in-out infinite;
+    }
+    
+    @keyframes iconBounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    .stat-card:hover .stat-icon {
+        animation: iconSpin 0.6s ease-in-out;
+    }
+    
+    @keyframes iconSpin {
+        0% { transform: rotate(0deg) scale(1); }
+        50% { transform: rotate(180deg) scale(1.1); }
+        100% { transform: rotate(360deg) scale(1); }
+    }
+    
+    .stat-value {
+        font-size: 3em;
+        font-weight: 700;
+        background: linear-gradient(135deg, #0f172a, #3b82f6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 15px 0 5px 0;
+        line-height: 1;
+    }
+    
+    .stat-label {
+        font-size: 0.95em;
+        color: var(--gray);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+    }
+    
+    .stat-change {
+        font-size: 0.85em;
+        margin-top: 8px;
+        font-weight: 500;
+    }
+    
+    .stat-change.positive { color: #10b981; }
+    .stat-change.negative { color: #ef4444; }
+    
+    .actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+    }
+    
+    .action-card {
+        background: white;
+        border-radius: 16px;
+        padding: 40px 30px;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 15px rgba(15, 23, 42, 0.1);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        animation: slideInUp 0.6s ease-out both;
+        text-decoration: none;
+        display: block;
+        color: inherit;
+    }
+    
+    .action-card:nth-child(1) { animation-delay: 0.5s; }
+    .action-card:nth-child(2) { animation-delay: 0.6s; }
+    .action-card:nth-child(3) { animation-delay: 0.7s; }
+    
+    .action-card:hover {
+        transform: translateY(-15px) scale(1.03);
+        box-shadow: 0 25px 50px rgba(15, 23, 42, 0.2);
+    }
+    
+    .action-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3em;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #3b82f6 100%);
+        color: white;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.3);
+        transition: all 0.4s ease;
+    }
+    
+    .action-card:hover .action-icon {
+        transform: scale(1.15) rotate(10deg);
+        box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
+    }
+    
+    .action-title {
+        font-size: 1.4em;
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 10px;
+    }
+    
+    .action-description {
+        color: var(--gray);
+        font-size: 0.95em;
+        line-height: 1.6;
+    }
+    
+    .recent-section {
+        background: white;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 4px 15px rgba(15, 23, 42, 0.1);
+        margin-bottom: 40px;
+        animation: fadeInUp 0.8s ease-out 0.8s both;
+    }
+    
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f1f5f9;
+        position: relative;
+    }
+    
+    .section-header::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 80px;
+        height: 2px;
+        background: linear-gradient(90deg, #0f172a, #3b82f6);
+    }
+    
+    .section-title {
+        font-size: 1.6em;
+        font-weight: 600;
+        color: var(--dark);
+    }
+    
+    .recent-item {
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 12px;
+        transition: all 0.3s ease;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-left: 3px solid transparent;
+    }
+    
+    .recent-item:hover {
+        background: linear-gradient(90deg, rgba(15, 23, 42, 0.03), rgba(59, 130, 246, 0.03));
+        border-left-color: #3b82f6;
+        transform: translateX(5px);
+    }
+    
+    .loading {
+        text-align: center;
+        padding: 20px;
+        color: var(--gray);
+    }
+    
+    .spinner {
+        border: 3px solid rgba(15, 23, 42, 0.1);
+        border-top: 3px solid #3b82f6;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 20px auto;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    @media (max-width: 768px) {
+        .hero-title { font-size: 2em; }
+        .hero-subtitle { font-size: 1em; }
+        .hero-section { padding: 40px 25px; }
+        .stats-grid, .actions-grid { grid-template-columns: 1fr; }
+        .stat-value { font-size: 2.5em; }
+    }
+    .footer {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        color: white;
+        border-radius: 20px;
+        padding: 50px 40px 30px 40px;
+        margin-top: 60px;
+        box-shadow: 0 10px 40px rgba(15, 23, 42, 0.4);
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.8s ease-out 1s both;
+    }
+    
+    .footer::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+        animation: shimmer 3s infinite;
+    }
+    
+    @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+    
+    .footer-content {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1.5fr;
+        gap: 50px;
+        margin-bottom: 40px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .footer-section h3 {
+        font-size: 1.2em;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .footer-brand {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .brand-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 1.5em;
+        font-weight: 700;
+        color: white;
+    }
+    
+    .brand-icon {
+        font-size: 1.3em;
+    }
+    
+    .footer-description {
+        color: rgba(255, 255, 255, 0.7);
+        line-height: 1.7;
+        font-size: 0.95em;
+    }
+    
+    .social-links {
+        display: flex;
+        gap: 12px;
+        margin-top: 20px;
+    }
+    
+    .social-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-decoration: none;
+        transition: all 0.4s ease;
+        font-size: 1.2em;
+        position: relative;
+        backdrop-filter: blur(10px);
+    }
+    
+    .social-icon::before {
+        content: '';
+        position: absolute;
+        inset: -2px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, #3b82f6, #60a5fa);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        z-index: -1;
+    }
+    
+    .social-icon:hover {
+        background: rgba(59, 130, 246, 0.2);
+        transform: translateY(-5px) scale(1.1);
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+    }
+    
+    .social-icon:hover::before {
+        opacity: 1;
+        animation: pulse 1.5s ease infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.2); opacity: 0.7; }
+    }
+    
+    .footer-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .footer-links li {
+        margin-bottom: 12px;
+    }
+    
+    .footer-links a {
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-size: 0.95em;
+        position: relative;
+        display: inline-block;
+        padding-left: 0;
+    }
+    
+    .footer-links a::before {
+        content: '→';
+        position: absolute;
+        left: -20px;
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+    
+    .footer-links a:hover {
+        color: white;
+        padding-left: 20px;
+    }
+    
+    .footer-links a:hover::before {
+        opacity: 1;
+        left: 0;
+    }
+    
+    .contact-info {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .contact-info li {
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.95em;
+        transition: all 0.3s ease;
+    }
+    
+    .contact-info li:hover {
+        color: white;
+        transform: translateX(5px);
+    }
+    
+    .contact-icon {
+        width: 35px;
+        height: 35px;
+        border-radius: 8px;
+        background: rgba(59, 130, 246, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1em;
+        flex-shrink: 0;
+    }
+    
+    .footer-divider {
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        margin: 30px 0;
+    }
+    
+    .footer-bottom {
+        text-align: center;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.9em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+    
+    .footer-bottom .heart {
+        color: #ef4444;
+        animation: heartbeat 1.5s ease-in-out infinite;
+        display: inline-block;
+    }
+    
+    @keyframes heartbeat {
+        0%, 100% { transform: scale(1); }
+        25% { transform: scale(1.2); }
+        50% { transform: scale(1); }
+    }
+    
+    @media (max-width: 1024px) {
+        .footer-content {
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .footer {
+            padding: 40px 25px 25px 25px;
+            border-radius: 16px;
+        }
+        
+        .footer-content {
+            grid-template-columns: 1fr;
+            gap: 35px;
+        }
+        
+        .social-links {
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="hero-content">
+        <h1 class="hero-title">Welcome Back, {{ current_user.full_name }}! 👋</h1>
+        <p class="hero-subtitle">Manage and verify loan applications with confidence and precision</p>
+    </div>
+</div>
+
+<!-- Stats Grid -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div class="stat-value" id="totalProfiles">0</div>
+        <div class="stat-label">Total Profiles</div>
+        <div class="stat-change positive" id="profilesChange">↗ +12% this week</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-value" style="color: #10b981;" id="verifiedToday">0</div>
+        <div class="stat-label">Verified Today</div>
+        <div class="stat-change positive" id="verifiedChange">↗ Great progress!</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-value" style="color: #f59e0b;" id="pending">0</div>
+        <div class="stat-label">Pending Review</div>
+        <div class="stat-change" id="pendingChange">— Awaiting action</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">🎯</div>
+        <div class="stat-value" style="color: #2563eb;" id="successRate">0%</div>
+        <div class="stat-label">Success Rate</div>
+        <div class="stat-change positive" id="rateChange">↗ Above average</div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="recent-section">
+    <div class="section-header">
+        <h2 class="section-title">Quick Actions</h2>
+    </div>
+    <div class="actions-grid">
+        <a href="{{ url_for('upload') }}" class="action-card">
+            <div class="action-icon">➕</div>
+            <h3 class="action-title">Upload Documents</h3>
+            <p class="action-description">Add new loan applicant with supporting documents (DFR, PA, Title)</p>
+        </a>
+        
+        <a href="{{ url_for('search') }}" class="action-card">
+            <div class="action-icon">🔍</div>
+            <h3 class="action-title">Search & Verify</h3>
+            <p class="action-description">Match and verify documents against stored profiles</p>
+        </a>
+        
+        <a href="{{ url_for('history') }}" class="action-card">
+            <div class="action-icon">📈</div>
+            <h3 class="action-title">View History</h3>
+            <p class="action-description">Access complete verification records and analytics</p>
+        </a>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="recent-section">
+    <div class="section-header">
+        <h2 class="section-title">Recent Verifications</h2>
+        <a href="{{ url_for('history') }}" class="btn btn-outline" style="padding: 8px 16px; font-size: 0.9em;">View All</a>
+    </div>
+    <div id="recentActivity">
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading recent activity...</p>
+        </div>
+    </div>
+</div>
+<footer class="footer">
+    <div class="footer-content">
+        <!-- Brand Section -->
+        <div class="footer-section footer-brand">
+            <div class="brand-header">
+                <span class="brand-icon">🏦</span>
+                <span>LoanVerify Pro</span>
+            </div>
+            <p class="footer-description">
+                Professional loan document verification system. Secure, fast, and reliable verification for financial institutions.
+            </p>
+            <div class="social-links">
+                <a href="#" class="social-icon" title="Email" aria-label="Email">
+                    📧
+                </a>
+                <a href="#" class="social-icon" title="LinkedIn" aria-label="LinkedIn">
+                    💼
+                </a>
+                <a href="#" class="social-icon" title="Twitter" aria-label="Twitter">
+                    🐦
+                </a>
+                <a href="#" class="social-icon" title="GitHub" aria-label="GitHub">
+                    📷
+                </a>
+            </div>
+        </div>
+        
+        <!-- Quick Links Section -->
+        <div class="footer-section">
+            <h3>Quick Links</h3>
+            <ul class="footer-links">
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('profiles') }}">All Profiles</a></li>
+                <li><a href="{{ url_for('search') }}">Verify Documents</a></li>
+                <li><a href="{{ url_for('history') }}">History</a></li>
+            </ul>
+        </div>
+        
+        <!-- Resources Section -->
+        <div class="footer-section">
+            <h3>Resources</h3>
+            <ul class="footer-links">
+                <li><a href="{{ url_for('documentation') }}">Documentation</a></li>
+                <li><a href="{{ url_for('api_guide') }}">API Reference</a></li>
+                <li><a href="{{ url_for('help_page') }}">Support Center</a></li>
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms of Service</a></li>
+            </ul>
+        </div>
+        
+        <!-- Contact Section -->
+        <div class="footer-section">
+            <h3>Contact Us</h3>
+            <ul class="contact-info">
+                <li>
+                    <span class="contact-icon">📧</span>
+                    <span>support@loanverify.com</span>
+                </li>
+                <li>
+                    <span class="contact-icon">📞</span>
+                    <span>+1 (555) 123-4567</span>
+                </li>
+                <li>
+                    <span class="contact-icon">🏢</span>
+                    <span>123 Finance St, NY 10001</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="footer-divider"></div>
+    
+    <div class="footer-bottom">
+        <span>© 2025 LoanVerify Pro. All rights reserved. | Built with</span>
+        <span class="heart">❤️</span>
+        <span>for financial security</span>
+    </div>
+</footer>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    loadDashboard();
+    
+    async function loadDashboard() {
+        try {
+            const db = await fetch('/api/dashboard-stats');
+            const data = await db.json();
+            
+            document.getElementById('totalProfiles').textContent = data.total_profiles || 0;
+            document.getElementById('verifiedToday').textContent = data.verified_today || 0;
+            document.getElementById('pending').textContent = data.pending || 0;
+            document.getElementById('successRate').textContent = (data.success_rate || 0) + '%';
+            
+            if (data.success_rate >= 80) {
+                document.getElementById('rateChange').innerHTML = '↗ Excellent performance';
+            } else if (data.success_rate >= 60) {
+                document.getElementById('rateChange').innerHTML = '→ Good performance';
+            } else {
+                document.getElementById('rateChange').innerHTML = '↘ Needs improvement';
+                document.getElementById('rateChange').classList.remove('positive');
+                document.getElementById('rateChange').classList.add('negative');
+            }
+            
+            displayRecentActivity(data.recent_verifications || []);
+        } catch (error) {
+            console.error('Error loading dashboard:', error);
+            document.getElementById('recentActivity').innerHTML = 
+                '<p style="text-align:center; color:#ef4444;">Error loading activity</p>';
+        }
+    }
+    
+    function displayRecentActivity(recent) {
+        const container = document.getElementById('recentActivity');
+        
+        if (recent.length === 0) {
+            container.innerHTML = '<p style="text-align:center; color:var(--gray);">No recent verification activity</p>';
+            return;
+        }
+        
+        container.innerHTML = recent.map(record => {
+            const statusColor = record.status === 'Verified' ? '#10b981' : '#ef4444';
+            const statusIcon = record.status === 'Verified' ? '✅' : '❌';
+            const date = new Date(record.verification_date);
+            const timeAgo = getTimeAgo(date);
+            
+            return `
+                <div class="recent-item">
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                            <span style="font-size: 1.2em;">${statusIcon}</span>
+                            <strong style="color: var(--dark);">Member ID: ${record.member_id}</strong>
+                            <span class="badge" style="background: ${statusColor}20; color: ${statusColor}; padding: 4px 10px; font-size: 0.8em;">
+                                ${record.status}
+                            </span>
+                        </div>
+                        <div class="small muted">
+                            Score: ${record.similarity_score}% | ${record.matched_count} matched, ${record.mismatched_count} mismatched
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="small muted">${timeAgo}</div>
+                        <a href="${'{{ url_for("history") }}'}" class="btn btn-primary" style="margin-top: 8px; padding: 6px 12px; font-size: 0.85em;">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    function getTimeAgo(date) {
+        const seconds = Math.floor((new Date() - date) / 1000);
+        
+        let interval = seconds / 31536000;
+        if (interval > 1) return Math.floor(interval) + " years ago";
+        
+        interval = seconds / 2592000;
+        if (interval > 1) return Math.floor(interval) + " months ago";
+        
+        interval = seconds / 86400;
+        if (interval > 1) return Math.floor(interval) + " days ago";
+        
+        interval = seconds / 3600;
+        if (interval > 1) return Math.floor(interval) + " hours ago";
+        
+        interval = seconds / 60;
+        if (interval > 1) return Math.floor(interval) + " minutes ago";
+        
+        return "Just now";
+    }
+</script>
+{% endblock %}

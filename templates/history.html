@@ -1,0 +1,517 @@
+{% extends "base.html" %}
+{% block title %}Verification History - LoanVerify Pro{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+        padding-bottom: 25px;
+        border-bottom: 3px solid #f1f5f9;
+        position: relative;
+        animation: fadeInUp 0.6s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .page-header::after {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        width: 120px;
+        height: 3px;
+        background: linear-gradient(90deg, #0f172a, #3b82f6, #0f172a);
+    }
+    
+    .page-title {
+        font-size: 2.5em;
+        font-weight: 700;
+        color: var(--dark);
+        background: linear-gradient(135deg, #0f172a, #3b82f6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .export-btn {
+        padding: 12px 24px;
+        background: linear-gradient(135deg, #059669, #10b981);
+        color: white;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .export-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+    }
+    
+    .table-container {
+        background: white;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(15, 23, 42, 0.1);
+        overflow-x: auto;
+        animation: fadeIn 0.8s ease-out 0.3s both;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1000px;
+    }
+    
+    thead {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    }
+    
+    th {
+        padding: 18px 16px;
+        text-align: left;
+        font-weight: 600;
+        color: white;
+        font-size: 0.95em;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    th:first-child {
+        border-top-left-radius: 12px;
+    }
+    
+    th:last-child {
+        border-top-right-radius: 12px;
+    }
+    
+    tbody tr {
+        border-bottom: 1px solid #f1f5f9;
+        transition: all 0.3s ease;
+        animation: slideIn 0.5s ease-out both;
+    }
+    
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    tbody tr:hover {
+        background: linear-gradient(90deg, rgba(15, 23, 42, 0.02), rgba(59, 130, 246, 0.05));
+        transform: translateX(5px);
+    }
+    
+    td {
+        padding: 16px;
+        color: var(--dark);
+        font-size: 0.95em;
+    }
+    
+    .verification-id {
+        font-weight: 700;
+        color: var(--gray);
+    }
+    
+    .member-id {
+        font-weight: 700;
+        font-size: 1.1em;
+        background: linear-gradient(135deg, #0f172a, #3b82f6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.85em;
+        font-weight: 600;
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    .status-badge.verified {
+        background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        color: #065f46;
+        box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+    }
+    
+    .status-badge.not-verified {
+        background: linear-gradient(135deg, #fee2e2, #fecaca);
+        color: #991b1b;
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2);
+    }
+    
+    .score {
+        font-weight: 700;
+        font-size: 1.1em;
+    }
+    
+    .score.high {
+        color: #10b981;
+    }
+    
+    .score.medium {
+        color: #f59e0b;
+    }
+    
+    .score.low {
+        color: #ef4444;
+    }
+    
+    .count-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.85em;
+        font-weight: 600;
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        color: #1e40af;
+    }
+    
+    .view-btn {
+        padding: 8px 16px;
+        background: linear-gradient(135deg, #0f172a, #3b82f6);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.9em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    }
+    
+    .view-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+    }
+    
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(5px);
+        z-index: 2000;
+        animation: fadeIn 0.3s ease-out;
+    }
+    
+    .modal-content {
+        position: relative;
+        background: white;
+        margin: 50px auto;
+        padding: 40px;
+        width: 90%;
+        max-width: 800px;
+        border-radius: 20px;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(15, 23, 42, 0.5);
+        animation: slideDown 0.4s ease-out;
+    }
+    
+    @keyframes slideDown {
+        from {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    .modal-close {
+        position: absolute;
+        top: 20px;
+        right: 25px;
+        font-size: 32px;
+        cursor: pointer;
+        color: var(--gray);
+        transition: all 0.3s ease;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #f1f5f9;
+    }
+    
+    .modal-close:hover {
+        color: var(--danger);
+        background: #fee2e2;
+        transform: rotate(90deg);
+    }
+    
+    .modal-title {
+        font-size: 2em;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f1f5f9;
+    }
+    
+    .fields-section {
+        margin-bottom: 30px;
+    }
+    
+    .fields-section h4 {
+        font-size: 1.3em;
+        font-weight: 600;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .fields-section h4.success {
+        color: #10b981;
+    }
+    
+    .fields-section h4.error {
+        color: #ef4444;
+    }
+    
+    .field-item {
+        padding: 15px 20px;
+        background: linear-gradient(90deg, rgba(15, 23, 42, 0.02), rgba(59, 130, 246, 0.02));
+        border-radius: 10px;
+        margin-bottom: 12px;
+        border-left: 3px solid transparent;
+        transition: all 0.3s ease;
+    }
+    
+    .field-item:hover {
+        transform: translateX(5px);
+        border-left-color: #3b82f6;
+    }
+    
+    .field-item.success {
+        border-left-color: #10b981;
+    }
+    
+    .field-item.error {
+        border-left-color: #ef4444;
+    }
+    
+    .field-name {
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 8px;
+    }
+    
+    .field-values {
+        font-size: 0.9em;
+        color: var(--gray);
+        line-height: 1.8;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--gray);
+    }
+    
+    .empty-state-icon {
+        font-size: 5em;
+        margin-bottom: 20px;
+        opacity: 0.4;
+    }
+    
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        
+        .page-title {
+            font-size: 2em;
+        }
+        
+        .export-btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .table-container {
+            padding: 15px;
+        }
+        
+        th, td {
+            padding: 12px 8px;
+            font-size: 0.85em;
+        }
+        
+        .modal-content {
+            margin: 20px auto;
+            padding: 25px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">📊 Verification History</h1>
+    <a href="{{ url_for('export_csv') }}" class="export-btn">
+        <span>📥</span>
+        <span>Export CSV</span>
+    </a>
+</div>
+
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Member ID</th>
+                <th>Applicant</th>
+                <th>Status</th>
+                <th>Score</th>
+                <th>Matched</th>
+                <th>Mismatched</th>
+                <th>Date</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in results %}
+            <tr>
+                <td><span class="verification-id">#{{ result.verification.id }}</span></td>
+                <td><span class="member-id">#{{ result.verification.member_id }}</span></td>
+                <td>{{ result.doc_extraction.applicant_name if result.doc_extraction else 'N/A' }}</td>
+                <td>
+                    <span class="status-badge {% if result.verification.status == 'Verified' %}verified{% else %}not-verified{% endif %}">
+                        {{ result.verification.status }}
+                    </span>
+                </td>
+                <td>
+                    <span class="score {% if result.verification.similarity_score >= 80 %}high{% elif result.verification.similarity_score >= 60 %}medium{% else %}low{% endif %}">
+                        {{ result.verification.similarity_score }}%
+                    </span>
+                </td>
+                <td>
+                    <span class="count-badge">
+                        {{ result.verification.matched_fields|length if result.verification.matched_fields else 0 }} fields
+                    </span>
+                </td>
+                <td>
+                    <span class="count-badge" style="background: linear-gradient(135deg, #fee2e2, #fecaca); color: #991b1b;">
+                        {{ result.verification.mismatched_fields|length if result.verification.mismatched_fields else 0 }} fields
+                    </span>
+                </td>
+                <td>{{ result.verification.verification_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>
+                    <button onclick='showDetails({{ result.verification.id }}, {{ result.verification.matched_fields|tojson|safe }}, {{ result.verification.mismatched_fields|tojson|safe }})' class="view-btn">
+                        👁️ View
+                    </button>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="9">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <p>No verification records yet. Start by uploading documents and running verifications.</p>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <h3 class="modal-title">🔍 Verification Details</h3>
+        <div id="modalContent"></div>
+    </div>
+</div>
+
+<script>
+    function showDetails(id, matched, mismatched) {
+        let html = '<div class="fields-section">';
+        html += '<h4 class="success">✅ Matched Fields (' + matched.length + ')</h4>';
+        
+        if (matched.length > 0) {
+            matched.forEach(field => {
+                html += '<div class="field-item success">';
+                html += '<div class="field-name">' + field + '</div>';
+                html += '</div>';
+            });
+        } else {
+            html += '<p style="color: var(--gray); padding: 20px; text-align: center;">No matched fields</p>';
+        }
+        html += '</div>';
+        
+        html += '<div class="fields-section">';
+        html += '<h4 class="error">❌ Mismatched Fields (' + Object.keys(mismatched).length + ')</h4>';
+        
+        if (Object.keys(mismatched).length > 0) {
+            for (let field in mismatched) {
+                html += '<div class="field-item error">';
+                html += '<div class="field-name">' + field + '</div>';
+                html += '<div class="field-values">';
+                html += '<strong style="color: #10b981;">Document:</strong> ' + mismatched[field].document + '<br>';
+                html += '<strong style="color: #ef4444;">Web:</strong> ' + mismatched[field].web + '<br>';
+                html += '<strong style="color: var(--gray);">Similarity:</strong> ' + mismatched[field].score + '%';
+                html += '</div>';
+                html += '</div>';
+            }
+        } else {
+            html += '<p style="color: var(--gray); padding: 20px; text-align: center;">No mismatched fields</p>';
+        }
+        html += '</div>';
+        
+        document.getElementById('modalContent').innerHTML = html;
+        document.getElementById('modal').style.display = 'block';
+    }
+    
+    function closeModal() {
+        document.getElementById('modal').style.display = 'none';
+    }
+    
+    window.onclick = function(event) {
+        const modal = document.getElementById('modal');
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+</script>
+{% endblock %}

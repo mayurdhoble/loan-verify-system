@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Documentation</title>
+    <style>
+        body { font-family: Arial; background: #f0f0f0; padding: 20px; }
+        .nav { background: white; padding: 15px; margin-bottom: 20px; border-radius: 8px; }
+        .nav a { margin-right: 20px; color: #007bff; text-decoration: none; }
+        .nav a:hover { text-decoration: underline; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; line-height: 1.6; }
+        h1 { color: #333; border-bottom: 3px solid #007bff; padding-bottom: 10px; }
+        h2 { color: #007bff; margin-top: 30px; }
+        h3 { color: #555; margin-top: 20px; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: monospace; color: #d63384; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; border-left: 4px solid #007bff; }
+        .section { margin: 30px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; }
+        ul { margin: 10px 0; padding-left: 30px; }
+        li { margin: 8px 0; }
+        .note { background: #fff3cd; padding: 15px; border-radius: 5px; border-left: 4px solid #ffc107; margin: 20px 0; }
+        .important { background: #f8d7da; padding: 15px; border-radius: 5px; border-left: 4px solid #dc3545; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <a href="{{ url_for('upload') }}">Upload</a>
+        <a href="{{ url_for('profiles') }}">Profiles</a>
+        <a href="{{ url_for('search') }}">Search & Verify</a>
+        <a href="{{ url_for('history') }}">History</a>
+        <a href="{{ url_for('documentation') }}">Docs</a>
+        <a href="{{ url_for('help_page') }}">Help</a>
+        <a href="{{ url_for('about') }}">About</a>
+        <a href="{{ url_for('logout') }}" style="float: right;">Logout</a>
+    </div>
+    
+    <div class="container">
+        <h1>📚 System Documentation</h1>
+        
+        <div class="section">
+            <h2>🎯 Overview</h2>
+            <p>
+                The Loan Verification System is an automated platform that verifies loan application documents 
+                against web profiles using AI-powered agents. The system extracts data from multiple PDF documents, 
+                scrapes information from web profiles, and compares them to determine verification status.
+            </p>
+        </div>
+        
+        <div class="section">
+            <h2>🏗️ System Architecture</h2>
+            <h3>Three-Agent Workflow:</h3>
+            <ul>
+                <li><strong>Agent 1 - Document Scanner:</strong> Extracts data from 3 PDF documents (DFR, Purchase Agreement, Title) using OCR and LLM</li>
+                <li><strong>Agent 2 - Web Scraper:</strong> Extracts data from the provided web profile URL using HTML parsing and LLM</li>
+                <li><strong>Agent 3 - Verifier:</strong> Compares both datasets and calculates similarity scores</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h2>📋 Extracted Fields</h2>
+            <p>The system extracts and compares these 5 key fields:</p>
+            <ul>
+                <li><code>applicant_name</code> - Full name of the loan applicant</li>
+                <li><code>vin</code> - Vehicle Identification Number (17 characters)</li>
+                <li><code>loan_amount</code> - Total loan amount</li>
+                <li><code>routing_no</code> - Bank routing number (9 digits)</li>
+                <li><code>account_no</code> - Bank account number</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h2>🔄 Workflow Process</h2>
+            <h3>Step 1: Upload Documents</h3>
+            <ol>
+                <li>Navigate to <strong>Upload</strong> page</li>
+                <li>Upload 3 PDF documents:
+                    <ul>
+                        <li>DFR (Dealer Financing Request)</li>
+                        <li>Purchase Agreement</li>
+                        <li>Title Document</li>
+                    </ul>
+                </li>
+                <li>Enter the profile URL</li>
+                <li>System assigns a unique <code>member_id</code></li>
+            </ol>
+            
+            <h3>Step 2: View Profiles</h3>
+            <ul>
+                <li>All uploaded members are listed with their <code>member_id</code></li>
+                <li>Each member shows document status and profile URL</li>
+            </ul>
+            
+            <h3>Step 3: Search & Verify</h3>
+            <ol>
+                <li>Enter <code>member_id</code> in search box</li>
+                <li>System displays member details</li>
+                <li>Click "Start Verification" button</li>
+                <li>Agents 1, 2, and 3 execute in sequence</li>
+                <li>Results are stored in database</li>
+            </ol>
+            
+            <h3>Step 4: View History</h3>
+            <ul>
+                <li>All verification records are displayed</li>
+                <li>View matched/mismatched fields</li>
+                <li>Export results to CSV</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h2>📊 Database Schema</h2>
+            <h3>Tables:</h3>
+            
+            <h4>1. users</h4>
+            <p>Stores user authentication information</p>
+            <pre>id, username, email, password_hash, full_name, created_at</pre>
+            
+            <h4>2. members</h4>
+            <p>Stores member records with documents and profile URL</p>
+            <pre>id, member_id, doc_dfr, doc_pa, doc_title, profile_url, uploaded_by, created_at</pre>
+            
+            <h4>3. document_extractions</h4>
+            <p>Data extracted from documents by Agent 1</p>
+            <pre>id, member_id, applicant_name, vin, loan_amount, routing_no, account_no, extraction_date</pre>
+            
+            <h4>4. web_extractions</h4>
+            <p>Data extracted from web profiles by Agent 2</p>
+            <pre>id, member_id, profile_url, applicant_name, vin, loan_amount, routing_no, account_no, extraction_date</pre>
+            
+            <h4>5. verifications</h4>
+            <p>Verification results by Agent 3</p>
+            <pre>id, member_id, user_id, similarity_score, status, matched_fields, mismatched_fields, 
+doc_extraction_id, web_extraction_id, verification_date</pre>
+        </div>
+        
+        <div class="section">
+            <h2>🔢 Similarity Scoring</h2>
+            <h3>Field Comparison:</h3>
+            <ul>
+                <li><strong>Exact Match:</strong> VIN, routing number, account number (100% or 0%)</li>
+                <li><strong>Fuzzy Match:</strong> Applicant name (token-based similarity)</li>
+                <li><strong>Threshold:</strong> Fields with ≥80% similarity are considered "matched"</li>
+            </ul>
+            
+            <h3>Overall Score:</h3>
+            <p>Average of all field similarity scores</p>
+            <ul>
+                <li><strong>≥80% = Verified</strong></li>
+                <li><strong>&lt;80% = Not Verified</strong></li>
+            </ul>
+        </div>
+        
+        <div class="note">
+            <strong>💡 Note:</strong> The system uses Google Gemini AI for intelligent field extraction from unstructured documents and web pages.
+        </div>
+        
+        <div class="section">
+            <h2>🗄️ Database Access</h2>
+            <h3>SQL Examples:</h3>
+            <pre>
+# Connect to database
+sqlite3 data/loan_verify.db
+
+# View all members
+SELECT * FROM members;
+
+# View verifications
+SELECT member_id, status, similarity_score, verification_date 
+FROM verifications 
+ORDER BY verification_date DESC;
+
+# Join member and verification data
+SELECT m.member_id, m.profile_url, v.status, v.similarity_score
+FROM members m
+JOIN verifications v ON m.member_id = v.member_id
+WHERE v.status = 'Verified';
+
+# Count verifications by status
+SELECT status, COUNT(*) as count
+FROM verifications
+GROUP BY status;
+            </pre>
+        </div>
+        
+        <div class="important">
+            <strong>⚠️ Important:</strong> All uploaded documents are stored in the <code>uploads/</code> directory. 
+            Regular backups are recommended for production use.
+        </div>
+        
+        <div class="section">
+            <h2>🔧 Technical Stack</h2>
+            <ul>
+                <li><strong>Backend:</strong> Flask (Python)</li>
+                <li><strong>Database:</strong> SQLite + SQLAlchemy ORM</li>
+                <li><strong>AI/ML:</strong> Google Gemini (via LangChain)</li>
+                <li><strong>OCR:</strong> Tesseract + PyMuPDF</li>
+                <li><strong>Web Scraping:</strong> BeautifulSoup + Requests</li>
+                <li><strong>Text Matching:</strong> RapidFuzz</li>
+                <li><strong>Authentication:</strong> Flask-Login + Bcrypt</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h2>📈 Best Practices</h2>
+            <ul>
+                <li>Upload high-quality PDF scans for better OCR accuracy</li>
+                <li>Ensure profile URLs are accessible and contain the required information</li>
+                <li>Regularly export verification history for backup</li>
+                <li>Use consistent naming conventions for applicants</li>
+                <li>Verify critical mismatches manually before final approval</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

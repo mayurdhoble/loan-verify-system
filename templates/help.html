@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Help & FAQ</title>
+    <style>
+        body { font-family: Arial; background: #f0f0f0; padding: 20px; }
+        .nav { background: white; padding: 15px; margin-bottom: 20px; border-radius: 8px; }
+        .nav a { margin-right: 20px; color: #007bff; text-decoration: none; }
+        .nav a:hover { text-decoration: underline; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; }
+        h1 { color: #333; border-bottom: 3px solid #28a745; padding-bottom: 10px; }
+        h2 { color: #28a745; margin-top: 30px; }
+        .faq { margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #28a745; }
+        .faq h3 { color: #333; margin: 0 0 10px 0; }
+        .faq p { margin: 0; line-height: 1.6; color: #555; }
+        .video-section { background: #e7f3ff; padding: 20px; border-radius: 8px; margin: 30px 0; }
+        .contact { background: #fff3cd; padding: 20px; border-radius: 8px; margin: 30px 0; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <a href="{{ url_for('upload') }}">Upload</a>
+        <a href="{{ url_for('profiles') }}">Profiles</a>
+        <a href="{{ url_for('search') }}">Search & Verify</a>
+        <a href="{{ url_for('history') }}">History</a>
+        <a href="{{ url_for('documentation') }}">Docs</a>
+        <a href="{{ url_for('help_page') }}">Help</a>
+        <a href="{{ url_for('about') }}">About</a>
+        <a href="{{ url_for('logout') }}" style="float: right;">Logout</a>
+    </div>
+    
+    <div class="container">
+        <h1>❓ Help & FAQ</h1>
+        
+        <h2>📖 Quick Start Guide</h2>
+        <div class="video-section">
+            <h3>Getting Started in 3 Steps:</h3>
+            <ol style="line-height: 2;">
+                <li><strong>Upload:</strong> Go to Upload page → Select 3 PDFs + enter profile URL → Submit</li>
+                <li><strong>Search:</strong> Go to Search page → Enter member ID → Click "Start Verification"</li>
+                <li><strong>Review:</strong> Check History page for verification results</li>
+            </ol>
+        </div>
+        
+        <h2>🔍 Frequently Asked Questions</h2>
+        
+        <div class="faq">
+            <h3>Q: What documents do I need to upload?</h3>
+            <p>You need exactly 3 PDF documents: DFR (Dealer Financing Request), Purchase Agreement, and Title Document. All three are required for verification.</p>
+        </div>
+        
+        <div class="faq">
+            <h3>Q: What is a member ID?</h3>
+            <p>A member ID is a unique number (1, 2, 3...) automatically assigned to each uploaded profile. Use this ID to search and verify members.</p>
+        </div>
+        
+        <div class="faq">
+            <h3>Q: What if my documents don't have all the required fields?</h3>
+            <p>The system will extract whatever information is available. Missing fields will be marked as "N/A" and will affect the similarity score.</p>
+        </div>
+        
+        <div class="faq">
+            <h3>Q: How is the similarity score calculated?</h3>
+            <p>The system compares 5 fields: applicant name, VIN, loan amount, routing number, and account number. The score is the average match percentage across all fields. 80% or higher = Verified.</p>
+        </div>
+        
+        <div class="faq">
+            <h3>Q: What does "Verified" vs "Not Verified" mean?</h3>
+            <p><strong>Verified:</strong> 80%+ similarity between documents and web profile (high confidence match)<br>
+            <strong>Not Verified:</strong> Less than 80% similarity (manual review recommended)</p>
+        </div>
+        
+        <div class="faq">
+            <h3>Q: Can I re-verify a member?</h3>
+            <p>Yes! Search for the member ID and click "Start Verification" again. A new verification record will be created.</p>
+        </div>
+        
+        <div class="faq">
+            <h3>Q: How do I export verification results?</h3>
+            <p>Go to History page → Click "Export CSV" button at the top right. This downloads all verification records as a CSV file.</p>
+        </div>
+        
+        <div class="faq">
+            <h3>Q: What file formats are supported?</h3>
+            <p>Only PDF files are supported for document uploads. The system uses OCR to extract text from images within PDFs.</p>
+        </div>
+        
+        <div class="faq">
+            <h3>Q: Why is my verification taking long?</h3>
+            <p>The verification process involves OCR scanning, AI extraction, and web scraping. This typically takes 10-30 seconds depending on document size and complexity.</p>
+        </div>
+        
+        <div class="faq">
+            <h3>Q: Can I delete a member or verification?</h3>
+            <p>Currently, the system doesn't have a delete feature in the UI. Records can be deleted directly from the database using SQL commands.</p>
+        </div>
+        
+        <div class="faq">
+            <h3>Q: What if the web profile URL is not accessible?</h3>
+            <p>If the URL returns an error or is blocked, Agent 2 will fail to extract data. Ensure the URL is publicly accessible.</p>
+        </div>
+        
+        <div class="faq">
+            <h3>Q: How accurate is the OCR extraction?</h3>
+            <p>OCR accuracy depends on document quality. For best results:
+                <ul style="margin-top: 10px;">
+                    <li>Use high-resolution scans (300+ DPI)</li>
+                    <li>Ensure text is clear and not blurry</li>
+                    <li>Avoid skewed or rotated documents</li>
+                </ul>
+            </p>
+        </div>
+        
+        <h2>🔧 Troubleshooting</h2>
+        
+        <div class="faq">
+            <h3>Issue: "No text extracted from document"</h3>
+            <p><strong>Solution:</strong> The PDF may be image-based without text. Ensure documents contain selectable text or high-quality images for OCR.</p>
+        </div>
+        
+        <div class="faq">
+            <h3>Issue: "Web extraction failed"</h3>
+            <p><strong>Solution:</strong> Check if the URL is correct and accessible. Some websites may block automated scraping.</p>
+        </div>
+        
+        <div class="faq">
+            <h3>Issue: Low similarity score despite correct data</h3>
+            <p><strong>Solution:</strong> Check the "Mismatched Fields" details. Small differences in formatting (e.g., "John Smith" vs "JOHN SMITH") might cause mismatches.</p>
+        </div>
+        
+        <h2>🎓 Tips & Best Practices</h2>
+        <ul style="line-height: 1.8;">
+            <li>✅ Always verify high-value transactions with similarity scores below 90%</li>
+            <li>✅ Keep document scans clean and properly oriented</li>
+            <li>✅ Regularly export and backup verification history</li>
+            <li>✅ Use consistent formatting for applicant names across documents</li>
+            <li>✅ Test with sample documents first to understand the system</li>
+        </ul>
+        
+        <div class="contact">
+            <h3>📧 Need More Help?</h3>
+            <p>If your question isn't answered here, please contact:</p>
+            <ul>
+                <li><strong>Email:</strong> support@loanverify.com</li>
+                <li><strong>Phone:</strong> +1 (555) 123-4567</li>
+                <li><strong>Hours:</strong> Monday-Friday, 9 AM - 5 PM EST</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

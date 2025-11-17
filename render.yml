@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: loan-verify-system
+    env: python
+    buildCommand: "pip install -r requirements.txt && python setup_admin.py"
+    startCommand: "gunicorn app:app"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: GOOGLE_API_KEY
+        value: AIzaSyBypcZBQt6JV4ohaKbalGa2E-gwSFXuvd4
+      - key: PYTHON_VERSION
+        value: 3.10.0
+    disk:
+      name: loan-verify-data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1

@@ -1,0 +1,373 @@
+{% extends "base.html" %}
+{% block title %}Search & Verify - LoanVerify Pro{% endblock %}
+
+{% block extra_css %}
+<style>
+    .search-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        animation: fadeInUp 0.6s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding-bottom: 25px;
+        border-bottom: 3px solid #f1f5f9;
+        position: relative;
+    }
+    
+    .page-header::after {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120px;
+        height: 3px;
+        background: linear-gradient(90deg, #0f172a, #3b82f6, #0f172a);
+    }
+    
+    .page-title {
+        font-size: 2.5em;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 10px;
+        background: linear-gradient(135deg, #0f172a, #3b82f6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .page-subtitle {
+        color: var(--gray);
+        font-size: 1.1em;
+    }
+    
+    .search-box {
+        background: white;
+        padding: 40px;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(15, 23, 42, 0.1);
+        margin-bottom: 30px;
+        animation: slideIn 0.6s ease-out 0.2s both;
+    }
+    
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .search-form {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+    
+    .search-input {
+        flex: 1;
+        padding: 16px 20px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1.1em;
+        transition: all 0.3s ease;
+        background: #f8fafc;
+    }
+    
+    .search-input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+    
+    .search-btn {
+        padding: 16px 32px;
+        background: linear-gradient(135deg, #0f172a, #3b82f6);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    }
+    
+    .search-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+    }
+    
+    .member-card {
+        background: white;
+        border-radius: 16px;
+        padding: 40px;
+        box-shadow: 0 4px 20px rgba(15, 23, 42, 0.1);
+        animation: slideUp 0.6s ease-out;
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .member-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f1f5f9;
+    }
+    
+    .member-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #0f172a, #3b82f6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2em;
+        color: white;
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+    
+    .member-title {
+        flex: 1;
+    }
+    
+    .member-title h3 {
+        font-size: 1.8em;
+        color: var(--dark);
+        margin-bottom: 5px;
+    }
+    
+    .member-title p {
+        color: var(--gray);
+        font-size: 0.95em;
+    }
+    
+    .info-grid {
+        display: grid;
+        gap: 20px;
+    }
+    
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        background: linear-gradient(90deg, rgba(15, 23, 42, 0.02), rgba(59, 130, 246, 0.02));
+        border-radius: 10px;
+        border-left: 3px solid transparent;
+        transition: all 0.3s ease;
+    }
+    
+    .info-row:hover {
+        border-left-color: #3b82f6;
+        background: linear-gradient(90deg, rgba(15, 23, 42, 0.05), rgba(59, 130, 246, 0.05));
+        transform: translateX(5px);
+    }
+    
+    .info-label {
+        font-weight: 600;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .info-value {
+        color: var(--gray);
+        font-size: 0.95em;
+    }
+    
+    .info-value.success {
+        color: #10b981;
+        font-weight: 600;
+    }
+    
+    .info-value.error {
+        color: #ef4444;
+        font-weight: 600;
+    }
+    
+    .verify-btn {
+        width: 100%;
+        padding: 18px;
+        background: linear-gradient(135deg, #059669, #10b981);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.2em;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 30px;
+        transition: all 0.4s ease;
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        text-decoration: none;
+        display: block;
+        text-align: center;
+    }
+    
+    .verify-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(16, 185, 129, 0.4);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 40px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(15, 23, 42, 0.1);
+    }
+    
+    .empty-state-icon {
+        font-size: 5em;
+        margin-bottom: 20px;
+        opacity: 0.4;
+    }
+    
+    .empty-state-text {
+        font-size: 1.2em;
+        color: var(--gray);
+    }
+    
+    @media (max-width: 768px) {
+        .search-form {
+            flex-direction: column;
+        }
+        
+        .search-btn {
+            width: 100%;
+        }
+        
+        .page-title {
+            font-size: 2em;
+        }
+        
+        .search-box, .member-card {
+            padding: 25px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="search-container">
+    <div class="page-header">
+        <h1 class="page-title">🔍 Search & Verify</h1>
+        <p class="page-subtitle">Find and verify member profiles by ID</p>
+    </div>
+    
+    <div class="search-box">
+        <form method="POST" class="search-form">
+            <input type="number" name="member_id" class="search-input" placeholder="Enter Member ID (e.g., 1, 2, 3...)" required min="1">
+            <button type="submit" class="search-btn">🔍 Search</button>
+        </form>
+    </div>
+    
+    {% if member %}
+    <div class="member-card">
+        <div class="member-header">
+            <div class="member-icon">👤</div>
+            <div class="member-title">
+                <h3>Member #{{ member.member_id }}</h3>
+                <p>Complete profile with documents ready for verification</p>
+            </div>
+        </div>
+        
+        <div class="info-grid">
+            <div class="info-row">
+                <span class="info-label">
+                    <span>📄</span>
+                    <span>DFR Document:</span>
+                </span>
+                <span class="info-value {% if member.doc_dfr %}success{% else %}error{% endif %}">
+                    {{ '✓ Uploaded' if member.doc_dfr else '✗ Missing' }}
+                </span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">
+                    <span>📋</span>
+                    <span>Purchase Agreement:</span>
+                </span>
+                <span class="info-value {% if member.doc_pa %}success{% else %}error{% endif %}">
+                    {{ '✓ Uploaded' if member.doc_pa else '✗ Missing' }}
+                </span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">
+                    <span>🏷️</span>
+                    <span>Title Document:</span>
+                </span>
+                <span class="info-value {% if member.doc_title %}success{% else %}error{% endif %}">
+                    {{ '✓ Uploaded' if member.doc_title else '✗ Missing' }}
+                </span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">
+                    <span>🌐</span>
+                    <span>Profile URL:</span>
+                </span>
+                <span class="info-value">
+                    <a href="{{ member.profile_url }}" target="_blank" style="color: var(--accent); text-decoration: none;">View Profile →</a>
+                </span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">
+                    <span>📅</span>
+                    <span>Created:</span>
+                </span>
+                <span class="info-value">{{ member.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+            </div>
+        </div>
+        
+        <a href="{{ url_for('verify', member_id=member.member_id) }}" class="verify-btn">
+            🔐 Start Verification Process
+        </a>
+    </div>
+    {% elif request.args.get('id') %}
+    <div class="empty-state">
+        <div class="empty-state-icon">🔍</div>
+        <p class="empty-state-text">No member found with ID {{ request.args.get('id') }}</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

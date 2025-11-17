@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Guide</title>
+    <style>
+        body { font-family: Arial; background: #f4f6f8; padding: 20px; }
+        .nav { background: white; padding: 15px; margin-bottom: 20px; border-radius: 8px; }
+        .nav a { margin-right: 20px; color: #007bff; text-decoration: none; }
+        .nav a:hover { text-decoration: underline; }
+
+        .container { background: white; padding: 30px; border-radius: 8px; max-width: 1000px; margin: 0 auto; }
+        h2 { color: #333; margin-bottom: 20px; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border-bottom: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #007bff; color: white; }
+        tr:hover { background: #f1f1f1; }
+
+        .method { font-weight: bold; color: white; padding: 4px 8px; border-radius: 4px; }
+        .GET { background: #28a745; }
+        .POST { background: #007bff; }
+        .DELETE { background: #dc3545; }
+        .PUT { background: #ffc107; color: #333; }
+
+        .desc { color: #555; }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <a href="{{ url_for('upload') }}">Upload</a>
+        <a href="{{ url_for('profiles') }}">Profiles</a>
+        <a href="{{ url_for('search') }}">Search & Verify</a>
+        <a href="{{ url_for('history') }}">History</a>
+        <a href="{{ url_for('api_guide') }}">API Guide</a>
+        <a href="{{ url_for('logout') }}" style="float: right;">Logout</a>
+    </div>
+
+    <div class="container">
+        <h2>📘 API Endpoints Documentation</h2>
+        <table>
+            <tr>
+                <th>Method</th>
+                <th>Endpoint</th>
+                <th>Description</th>
+            </tr>
+            {% for route in api_routes %}
+            <tr>
+                <td><span class="method {{ route.method }}">{{ route.method }}</span></td>
+                <td><code>{{ route.endpoint }}</code></td>
+                <td class="desc">{{ route.description }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>
